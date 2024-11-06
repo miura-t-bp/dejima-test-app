@@ -1,0 +1,22 @@
+<!-- フォーム切り替えタブ -->
+<div class="formtabs">
+    <button class="formtablink active" onclick="openForm(event, 'invoice_detail_input')">インボイス詳細登録（DHL）</button>
+</div>
+
+<!-- インボイス詳細登録（DHL）フォーム -->
+<div id="invoice_detail_input" class="formtabcontent" style="display:block;">
+    <h3>インボイス詳細登録（DHL）</h3>
+    <form id="form_invoice_detail_input">
+        <table>
+            <tr>
+                <th>荷物番号</th>
+                <td>
+                    <input id="baggage_number_for_invoice_detail_input" name="baggage_number_for_invoice_detail_input"><br>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">インボイス詳細登録</button>
+    </form>
+    <h4>実行結果</h4>
+    <div id="invoice-detail-input-response" class="response"></div>
+</div>

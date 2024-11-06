@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="icon" href="/static/images/sele.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>selenium</title>
+</head>
+<body>
+    <h3>共通設定</h3>
+    <table>
+        <tbody>
+            <tr>
+                <th>テスト環境</th>
+                <td>
+                    <select id="env" name="env"></select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- メインタブ -->
+    <div class="tabs">
+        <button class="tablink active" onclick="openTab(event, 'wh')">WH</button>
+        <button class="tablink" onclick="openTab(event, 'cs')">CS</button>
+    </div>
+
+    <!-- CSタブのコンテンツ -->
+    <div id="cs" class="tabcontent" style="display:none;">
+        {% block cs %}
+            {% include "cs.html" %}
+        {% endblock %}
+    </div>
+
+    <!-- WHタブのコンテンツ -->
+    <div id="wh" class="tabcontent" style="display:block;">
+        {% block wh %}
+            {% include "wh.html" %}
+        {% endblock %}
+    </div>
+
+    <div id="loading-spinner" style="display: none;"></div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

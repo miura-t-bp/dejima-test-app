@@ -1,0 +1,74 @@
+<!-- フォーム切り替えタブ -->
+<div class="formtabs">
+    <button class="formtablink active" onclick="openForm(event, 'regist_baggage_form')">荷物登録</button>
+    <button class="formtablink" onclick="openForm(event, 'regist_weight_form')">重量・寸法登録</button>
+    <button class="formtablink" onclick="openForm(event, 'bundle_baggage_form')">同梱作業チェック完了</button>
+</div>
+
+<!-- 荷物登録フォーム -->
+<div id="regist_baggage_form" class="formtabcontent" style="display:block;">
+    <h3>荷物登録</h3>
+    <form id="form_regist_baggage">
+        <table>
+            <tr>
+                <th>登録対象</th>
+                <td>
+                    <label for="order_number">注文番号：</label>
+                    <input id="order_number" name="order_number">
+                    <br>
+                    <label for="service">サービス：</label>
+                    <select id="service" name="service"></select>
+                    <br>
+                    <label for="quantity">登録個数：</label>
+                    <input id="quantity" name="quantity" type="number" value="1" required>
+                </td>
+            </tr>
+            <tr>
+                <th>オプション</th>
+                <td>
+                    <label for="no_weight_regist">重量・寸法登録スキップ</label>
+                    <input type="checkbox" id="no_weight_regist" name="no_weight_regist" value="1">
+                </td>
+            </tr>
+        </table>
+        <button type="submit">荷物登録</button>
+    </form>
+    <h4>実行結果</h4>
+    <div id="regist-baggage-response" class="response"></div>
+</div>
+
+<!-- 重量・寸法登録フォーム -->
+<div id="regist_weight_form" class="formtabcontent" style="display:none;">
+    <h3>重量・寸法登録</h3>
+    <form id="form_regist_weight">
+        <table>
+            <tr>
+                <th>荷物番号</th>
+                <td>
+                    <input id="baggage_number_for_regist_weight" name="baggage_number_for_regist_weight"><br>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">重量・寸法登録</button>
+    </form>
+    <h4>実行結果</h4>
+    <div id="regist-baggage-weight-response" class="response"></div>
+</div>
+
+<!-- 同梱作業チェック完了フォーム -->
+<div id="bundle_baggage_form" class="formtabcontent" style="display:none;">
+    <h3>同梱作業チェック完了</h3>
+    <form id="form_bundle_baggage">
+        <table>
+            <tr>
+                <th>同梱荷物番号</th>
+                <td>
+                    <input id="bundle_baggage_number" name="bundle_baggage_number"><br>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">同梱作業チェック完了</button>
+    </form>
+    <h4>実行結果</h4>
+    <div id="bundle-baggage-response" class="response"></div>
+</div>
