@@ -20,16 +20,24 @@ def regist_baggage(data):
     if quantity > 1 and service == "-1":
         return error_response("複数注文の荷物登録を行う場合はサービスを指定してください。")
 
-    # 注文番号が指定されている場合は、個数を1に設定
+    # 個数が25個より多い場合はエラー
+    if quantity > 25:
+        return error_response("一度に登録できる荷物は25個までです。")
+
+    # 対象
     if order_number:
-        quantity = 1
+        order_numbers = [order_number]
+    else:
+        order_numbers = cswh.get_latest_order_numbers_by_service(service, quantity)
 
-    # 指定された個数分の荷物登録を行う
-    res = {"order_numbers": [], "baggage_numbers": []}
-    for _ in range(quantity):
-        # 注文番号が指定されていない場合は、最新の注文番号を取得
-        regist_order_number = order_number if order_number else cswh.get_latest_order_number_by_service(service)
+    # レスポンス用の辞書
+    res = {
+        "order_numbers": order_numbers,
+        "baggage_numbers": []
+    }
 
+    # 注文番号それぞれに対して荷物登録を行う
+    for regist_order_number in order_numbers:
         # 荷物仮登録
         baggage_number, err_message = cswh.regist_baggage(regist_order_number)
         if err_message:
@@ -42,7 +50,7 @@ def regist_baggage(data):
                 return error_response(err_message)
 
         # 登録個数が1つの場合
-        if quantity == 1:
+        if len(order_numbers) == 1:
             # CS荷物詳細画面から荷物ステータスとURLを取得
             baggage_status, cs_baggage_detail_url = cswh.get_baggage_status_and_detail_url(baggage_number)
             return {
@@ -52,7 +60,6 @@ def regist_baggage(data):
                 "cs_baggage_detail_url": cs_baggage_detail_url
             }
         else:
-            res["order_numbers"].append(regist_order_number)
             res["baggage_numbers"].append(baggage_number)
 
     return res

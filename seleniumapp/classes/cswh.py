@@ -146,6 +146,52 @@ class CsWh:
         # 最新の注文番号
         return order_number_column.text
 
+    def get_latest_order_numbers_by_service(self, service: str, quantity: int) -> list:
+        """
+        指定されたサービス注文の注文番号を複数取得しリストで返す
+        - 注文ステータスが代理購入済み国内配送番号確定待ちの注文を取得
+
+        Args:
+            service  (str): サービス名
+            quantity (int): 取得する注文番号の個数
+
+        Returns:
+            order_numbers: 注文番号のリスト
+        """
+
+        # CS管理画面にログイン
+        if not self.is_logged_in_cs:
+            self.login_cs()
+
+        # メルカリ注文検索ページにアクセス
+        self.driver.get(self.main_cs_url + "shopping/mercariSearch")
+
+        # 引数で受け取ったサービスの注文にチェック
+        check_box_name = "search[is_" + service + "_order]"
+        self.driver.find_element(By.NAME, check_box_name).click()
+        # 注文ステータスに代理購入済み国内配送番号確定待ちを選択
+        status_select = Select(self.driver.find_element(By.ID, "search_status"))
+        status_select.select_by_value("35")
+        # 並び替えに降順を選択
+        sort_select = Select(self.driver.find_element(By.NAME, "search[sort]"))
+        sort_select.select_by_value("1")
+
+        # 検索ボタンをクリック
+        self.driver.find_element(By.CLASS_NAME, "search_order_btn").click()
+
+        # 検索結果のテーブルを取得
+        table = self.driver.find_element(By.ID, "data_table")
+
+        # 指定された個数分の注文番号を上から取得
+        order_numbers = []
+        for i in range(2, quantity + 2):
+            row = table.find_element(By.XPATH, "./tbody/tr[" + str(i) + "]")
+            order_number_column = row.find_element(By.XPATH, "./td[2]/a")
+            order_numbers.append(order_number_column.text)
+
+        # 注文番号のリストを返す
+        return order_numbers
+
     def get_latest_order_number_by_member_id(self, member_id: int) -> str:
         """
         最新の指定された会員IDの注文番号を取得する
