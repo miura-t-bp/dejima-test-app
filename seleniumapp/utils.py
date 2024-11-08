@@ -1,8 +1,29 @@
 from .classes.cswh import CsWh
 
-import subprocess
+import logging
+import os
+
+#  ログディレクトリが存在しない場合は作成
+os.makedirs("/app/logs", exist_ok=True)
+
+# ロガー設定
+info_logger = logging.getLogger("info_logger")
+info_logger.setLevel(logging.INFO)
+
+# ファイルハンドラー設定
+file_handler = logging.FileHandler("/app/logs/info.log")
+file_handler.setLevel(logging.INFO)
+
+# フォーマット設定
+formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+file_handler.setFormatter(formatter)
+
+# ロガーにハンドラーを追加
+info_logger.addHandler(file_handler)
 
 def regist_baggage(data):
+
+    info_logger.info("====== 荷物登録処理 開始 ======")
 
     # テスト環境を取得し、CsWhクラス生成
     cswh = CsWh(data.get("env"))
@@ -28,7 +49,10 @@ def regist_baggage(data):
     if order_number:
         order_numbers = [order_number]
     else:
+        info_logger.info(f"対象取得開始 個数:{quantity}")
         order_numbers = cswh.get_latest_order_numbers_by_service(service, quantity)
+
+    info_logger.info(f"対象注文番号:{order_numbers}")
 
     # レスポンス用の辞書
     res = {
@@ -39,6 +63,7 @@ def regist_baggage(data):
     # 注文番号それぞれに対して荷物登録を行う
     for regist_order_number in order_numbers:
         # 荷物仮登録
+        info_logger.info(f"登録開始 注文番号:{order_numbers}")
         baggage_number, err_message = cswh.regist_baggage(regist_order_number)
         if err_message:
             return error_response(err_message)
@@ -77,12 +102,12 @@ def regist_baggage_weight(data):
 
     if err_message:
         return error_response(err_message)
-    else:
-        return {
-            "baggage_number": baggage_number,
-            "baggage_status": baggage_status,
-            "cs_baggage_detail_url": cs_baggage_detail_url
-        }
+
+    return {
+        "baggage_number": baggage_number,
+        "baggage_status": baggage_status,
+        "cs_baggage_detail_url": cs_baggage_detail_url
+    }
 
 def bundle_baggage(data):
 
@@ -105,8 +130,8 @@ def invoice_detail_input(data):
 
     if err_message:
         return error_response(err_message)
-    else:
-        return {"baggage_number": baggage_number}
+
+    return {"baggage_number": baggage_number}
 
 def error_response(err_message):
     return {

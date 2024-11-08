@@ -8,5 +8,6 @@ services:
     volumes:
       - .:/app
       - ./static:/app/static
+      - ./logs:/app/logs
     environment:
       - DEBUG=1  # 環境変数設定

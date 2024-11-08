@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 responseElement.classList.add('success');
                 responseElement.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
                 if (cs_baggage_detail_url != null) {
-                    responseElement.innerHTML += `<a href="${cs_baggage_detail_url}" target="_blank" style="display: block; margin-top: 10px;">詳細画面を開く</a>`;
+                    responseElement.innerHTML += `<a href="${cs_baggage_detail_url}" target="_blank" style="display: block; margin-top: 10px;">CS荷物詳細画面を開く</a>`;
                 }
             } else {
                 responseElement.classList.add('error');
@@ -96,8 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { value: 'dev3', text: 'dev3' },
         { value: 'dev8', text: 'dev8' },
         { value: 'dev15', text: 'dev15' },
-        { value: 'dev17', text: 'dev17' },
-        { value: 'local', text: 'local' }
+        { value: 'dev17', text: 'dev17' }
     ];
 
     // テスト環境プルダウンメニューにオプションを追加
