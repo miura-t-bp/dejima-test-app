@@ -43,9 +43,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // APIを実行する関数
-    function callApi(url, body, responseElementId) {
+    function callApi(url, form, responseElementId) {
         const csrfToken = getCSRFToken(); // CSRFトークンを取得
         const responseElement = document.getElementById(responseElementId); // レスポンス表示エリア
+
+        // フォームデータを取得
+        const formData = new FormData(form);
+        const body = Object.fromEntries(formData.entries());
+
+        // 共通の項目を追加
+        body.env = document.getElementById('env').value;
 
         // 結果表示エリアをリセット
         responseElement.innerText = '';
@@ -61,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
             },
-            body: body
+            body: JSON.stringify(body)
         })
         .then(response => response.json())
         .then(data => {
@@ -129,48 +136,32 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // デフォルト送信動作を防止
 
         // APIリクエストを実行
-        callApi('http://localhost:8001/selenium/regist-baggage/', JSON.stringify({
-            env: document.getElementById('env').value,
-            order_number: document.getElementById('order_number').value,
-            service: document.getElementById('service').value,
-            quantity: document.getElementById('quantity').value,
-            no_weight_regist: document.getElementById('no_weight_regist').checked
-        }), 'regist-baggage-response');
+        callApi('http://localhost:8001/selenium/regist-baggage/', this, 'regist-baggage-response');
     });
 
     // 重量・寸法登録フォーム送信時の処理
     document.getElementById('form_regist_weight').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        callApi('http://localhost:8001/selenium/regist-baggage-weight/', JSON.stringify({
-            env: document.getElementById('env').value,
-            baggage_number: document.getElementById('baggage_number_for_regist_weight').value
-        }), 'regist-baggage-weight-response');
+        callApi('http://localhost:8001/selenium/regist-baggage-weight/', this, 'regist-baggage-weight-response');
     });
 
     // 同梱作業チェック完了フォーム送信時の処理
     document.getElementById('form_bundle_baggage').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        callApi('http://localhost:8001/selenium/bundle-baggage/', JSON.stringify({
-            env: document.getElementById('env').value,
-            bundle_baggage_number: document.getElementById('bundle_baggage_number').value
-        }), 'bundle-baggage-response');
+        callApi('http://localhost:8001/selenium/bundle-baggage/', this, 'bundle-baggage-response');
     });
 
     // インボイス詳細登録フォーム送信時の処理
     document.getElementById('form_invoice_detail_input').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        callApi('http://localhost:8001/selenium/invoice-detail-input/', JSON.stringify({
-            env: document.getElementById('env').value,
-            baggage_number: document.getElementById('baggage_number_for_invoice_detail_input').value
-        }), 'invoice-detail-input-response');
+        callApi('http://localhost:8001/selenium/invoice-detail-input/', this, 'invoice-detail-input-response');
     });
 
     // CSRFトークンを取得する関数
     function getCSRFToken() {
         return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
-
 });
