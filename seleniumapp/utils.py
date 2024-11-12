@@ -70,7 +70,7 @@ def regist_baggage(data):
 
         # 重量・寸法登録スキップオプションが指定されていない場合は重量・寸法登録
         if not data.get("no_weight_regist"):
-            baggage_number, err_message = cswh.regist_weight(baggage_number)
+            baggage_number, err_message = cswh.regist_weight(baggage_number, data.get("weight_gram"), data.get("length_mm"), data.get("width_mm"), data.get("height_mm"))
             if err_message:
                 return error_response(err_message)
 
@@ -95,7 +95,7 @@ def regist_baggage_weight(data):
     cswh = CsWh(data.get("env"))
 
     # 重量・寸法登録
-    baggage_number, err_message = cswh.regist_weight(data.get("baggage_number"))
+    baggage_number, err_message = cswh.regist_weight(data.get("baggage_number"), data.get("weight_gram"), data.get("length_mm"), data.get("width_mm"), data.get("height_mm"))
 
     # CS荷物詳細画面から荷物ステータスとURLを取得
     baggage_status, cs_baggage_detail_url = cswh.get_baggage_status_and_detail_url(baggage_number)

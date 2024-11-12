@@ -367,13 +367,17 @@ class CsWh:
 
         return baggage_number, None
 
-    def regist_weight(self, baggage_number):
+    def regist_weight(self, baggage_number, weight_gram=500, length_mm=100, width_mm=100, height_mm=100):
         """
         指定された荷物番号の荷物の重量・寸法登録を行う
         - エラーメッセージが表示されている場合はエラーメッセージを表示して終了
 
         Args:
             baggage_number (str): 重量・寸法登録する注文の注文番号
+            weight_gram    (int): 重量（グラム）
+            length_mm      (int): 縦（ミリ）
+            width_mm       (int): 横（ミリ）
+            height_mm      (int): 高さ（ミリ）
 
         Returns:
             bool: 重量・寸法登録が成功したかどうか
