@@ -80,6 +80,23 @@ button:hover {
     background-color: #111;
 }
 
+/* ページ切り替えリンクのスタイル */
+.page-switch-links a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: 1px solid #98b4c1;
+    border-radius: 4px;
+    background-color: #cfe8f3;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.page-switch-links a:hover {
+    background-color: #e3f3f9;
+    border-color: #7fa6b8;
+}
+
 /* タブのスタイル */
 .tabs, .formtabs {
     width: 100%;

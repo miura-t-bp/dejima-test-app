@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('selenium/', include('seleniumapp.urls')),
+    path('shell/', include('shellapp.urls')),
 ]

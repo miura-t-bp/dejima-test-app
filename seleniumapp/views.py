@@ -7,7 +7,7 @@ from .utils import regist_baggage, bundle_baggage, regist_baggage_weight, invoic
 import json
 
 def index(request):
-    return render(request, "index.html")
+    return render(request, "selenium_index.html")
 
 def regist_baggage_api(request):
     if request.method == 'POST':
