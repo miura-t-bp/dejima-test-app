@@ -1,7 +1,12 @@
 from .classes.cswh import CsWh
 
 import logging
+import time
 import os
+
+# 日本時間（JST）に変換するためのコンバータ
+def jst_converter(*args):
+    return time.localtime(time.time() + 9 * 3600)  # UTC+9
 
 # ロガー設定用関数
 def setup_logger():
@@ -12,6 +17,10 @@ def setup_logger():
     logger = logging.getLogger("logger")
     logger.setLevel(logging.DEBUG)
 
+    # フォーマッタを日本時間に設定
+    logging.Formatter.converter = jst_converter
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+
     # ハンドラー設定
     handlers = {
         "error": ("/app/logs/error.log", logging.ERROR),
@@ -20,7 +29,6 @@ def setup_logger():
     }
 
     # 各ハンドラーを作成しロガーに追加
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
     for handler_name, (file_path, level) in handlers.items():
         handler = logging.FileHandler(file_path)
         handler.setLevel(level)
