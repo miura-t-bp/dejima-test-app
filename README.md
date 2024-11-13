@@ -37,29 +37,47 @@ docker-compose up -d --build
 3. 画面上で各フォームの入力内容を指定し、`荷物登録`や`重量・寸法登録`ボタンをクリックしてテストを実行します。
 4. 実行結果が画面下部に表示され、リンクも表示されている場合はそちらから該当のページへアクセスすることができます。
 
-## ログ出力による動作確認
+## ログ関連
 
-本アプリでは、テストの実行状況を確認するために、`logs/info.log` に実行ログを出力しています。
+本アプリでは、`logs` フォルダにログレベルごとにファイルを分けて出力しています。
 
-- **リアルタイムでのログ確認**: 実行状況をリアルタイムで確認したい場合、以下のコマンドを使用してください。
+### ログの種類
 
-  ```bash
-  tail -f logs/info.log
+- **DEBUG ログ**
+  - デバッグの際に使用します。出力先：`logs/debug.log`
+- **INFO ログ**
+  - テストの実行状況を記録します。出力先：`logs/info.log`
+- **ERROR ログ**
+  - エラー内容を記録します。出力先：`logs/error.log`
+
+<details><summary><strong>ログ確認方法</strong></summary>
+<br>
+実行状況をリアルタイムで確認したい場合、以下のコマンドを使用してください。
+
+```bash
+tail -f logs/debug.log   # DEBUGログの確認
+tail -f logs/info.log    # INFOログの確認
+tail -f logs/error.log   # ERRORログの確認
+```
+</details>
+
+<details><summary><strong>ログの使用方法</strong></summary>
+<br>
+アプリケーション内でのログの使用例は以下の通りです。各関数内で <code>logger</code> を使って適切なレベルのログを記録できます。
+
+```python
+def regist_baggage(data):
+    logger.debug("regist_baggage 関数が呼び出されました")
+    logger.info(f"登録するデータ: {data}")
+    try:
+        # 登録処理などを実装
+        pass
+    except Exception as e:
+        logger.error(f"エラーが発生しました: {e}")
+
+```
+</details>
 
 ## よくある問題と対処法
 
 （後々追記予定）
-
-## ローカルでのデバッグ方法
-
-- コンテナ内部での操作が必要な場合、以下のコマンドでコンテナにアクセスできます。
-
-  ```bash
-  docker exec -it <コンテナ名> /bin/bash
-  ```
-
-  `コンテナ名` の確認は以下のコマンドで可能です。
-
-  ```bash
-  docker ps
-  ```

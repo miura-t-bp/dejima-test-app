@@ -3,27 +3,38 @@ from .classes.cswh import CsWh
 import logging
 import os
 
-#  ログディレクトリが存在しない場合は作成
-os.makedirs("/app/logs", exist_ok=True)
+# ロガー設定用関数
+def setup_logger():
+    # ログディレクトリが存在しない場合は作成
+    os.makedirs("/app/logs", exist_ok=True)
 
-# ロガー設定
-info_logger = logging.getLogger("info_logger")
-info_logger.setLevel(logging.INFO)
+    # ロガー設定
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.DEBUG)
 
-# ファイルハンドラー設定
-file_handler = logging.FileHandler("/app/logs/info.log")
-file_handler.setLevel(logging.INFO)
+    # ハンドラー設定
+    handlers = {
+        "error": ("/app/logs/error.log", logging.ERROR),
+        "info": ("/app/logs/info.log", logging.INFO),
+        "debug": ("/app/logs/debug.log", logging.DEBUG)
+    }
 
-# フォーマット設定
-formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
-file_handler.setFormatter(formatter)
+    # 各ハンドラーを作成しロガーに追加
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+    for handler_name, (file_path, level) in handlers.items():
+        handler = logging.FileHandler(file_path)
+        handler.setLevel(level)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-# ロガーにハンドラーを追加
-info_logger.addHandler(file_handler)
+    return logger
+
+# ロガーを設定
+logger = setup_logger()
 
 def regist_baggage(data):
 
-    info_logger.info("====== 荷物登録処理 開始 ======")
+    logger.info("====== 荷物登録処理 開始 ======")
 
     # テスト環境を取得し、CsWhクラス生成
     cswh = CsWh(data.get("env"))
@@ -49,10 +60,10 @@ def regist_baggage(data):
     if order_number:
         order_numbers = [order_number]
     else:
-        info_logger.info(f"対象取得開始 個数:{quantity}")
+        logger.info(f"対象取得開始 個数:{quantity}")
         order_numbers = cswh.get_latest_order_numbers_by_service(service, quantity)
 
-    info_logger.info(f"対象注文番号:{order_numbers}")
+    logger.info(f"対象注文番号:{order_numbers}")
 
     # レスポンス用の辞書
     res = {
@@ -63,7 +74,7 @@ def regist_baggage(data):
     # 注文番号それぞれに対して荷物登録を行う
     for regist_order_number in order_numbers:
         # 荷物仮登録
-        info_logger.info(f"登録開始 注文番号:{order_numbers}")
+        logger.info(f"登録開始 注文番号:{order_numbers}")
         baggage_number, err_message = cswh.regist_baggage(regist_order_number)
         if err_message:
             return error_response(err_message)
