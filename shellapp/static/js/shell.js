@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // テスト環境オプションを設定
     const envOptions = [
         { value: 'dev17', text: 'dev17' },
+        { value: 'local', text: 'local'},
     ];
 
     // テスト環境プルダウンメニューにオプションを追加

@@ -12,8 +12,16 @@
 # 現在のスクリプトが存在するディレクトリを取得
 NOW_DIR=$(dirname "$0")
 
+domain=$1
+if [[ "$domain" == "dejima.local" ]]; then
+    # DBからデータを取得するシェルスクリプトのパス
+    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_local.sh"
+else
+    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_stg.sh"
+fi
+
 # 最新のBunjang注文番号を取得
-latest_bunjang_order_number=$(sh $NOW_DIR/db/get_data_from_stg.sh "SELECT bunjang_order_number FROM order_shopping_bunjang ORDER BY id DESC LIMIT 1;")
+latest_bunjang_order_number=$(sh $GET_DB_DATA_SHELL_FILE "SELECT bunjang_order_number FROM order_shopping_bunjang ORDER BY id DESC LIMIT 1;")
 
 # 新しいBunjang注文番号を生成
 date_of_latest_bunjang_order_number=${latest_bunjang_order_number:2:6}
@@ -27,7 +35,7 @@ else
 fi
 
 # 新しいBunjang注文番号が重複していないか確認
-bunjang_order=$(sh $NOW_DIR/db/get_data_from_stg.sh "SELECT id FROM order_shopping_bunjang WHERE bunjang_order_number = '$new_bunjang_order_number';")
+bunjang_order=$(sh $GET_DB_DATA_SHELL_FILE "SELECT id FROM order_shopping_bunjang WHERE bunjang_order_number = '$new_bunjang_order_number';")
 if [[ -n "$bunjang_order" ]]; then
     echo "新しく生成したBunjang注文番号が重複しています。"
     exit 1
@@ -52,8 +60,9 @@ json_data="{\"items\":[{\"item_code\":\"$item_code\",\"product_code\":null,\"ite
 echo "Bunjang注文を作成します。item_code: $item_code, bunjang_order_number: $new_bunjang_order_number"
 
 # 注文作成
-domain=$1
 url="https://{$domain}/bunjang-event/orderCreate"
 curl -X POST $url \
      -H "Content-Type: application/json" \
-     -d "$json_data"
+     -d "$json_data" \
+     --insecure
+
