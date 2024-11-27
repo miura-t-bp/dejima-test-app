@@ -205,3 +205,8 @@ button:hover {
         margin-bottom: 10px;
     }
 }
+
+.notice p {
+    color: #ff695b;
+    font-weight: bold;
+}

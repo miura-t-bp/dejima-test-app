@@ -4,16 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <!-- <link rel="icon" href="/static/images/sele.ico" type="image/x-icon"> -->
-    <!-- <link rel="stylesheet" href="/static/css/style.css"> -->
+    {% load static %}
+    <link rel="icon" href="{% static 'images/iTerm2.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/common.css' %}">
     <title>shell</title>
 </head>
 <body>
     <div class="page-switch-links">
-        <a href="http://localhost:8001/selenium/">Selenium Page</a> | 
-        <a href="http://localhost:8001/shell/">Shell Page</a>
+        <a href="http://localhost:8001/selenium/">Selenium</a>
+        <a href="http://localhost:8001/shell/">Shell</a>
     </div>
 
-    <h3>MercariUS注文作成</h3>
+    <h3>共通設定</h3>
+    <table>
+        <tbody>
+            <tr>
+                <th>テスト環境</th>
+                <td>
+                    <select id="env" name="env"></select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 注意事項 -->
+    <div class="notice">
+        <p>
+            ※注文作成ボタンを押すと、注文を作成するためのコマンドが生成されます。</br>
+            ※注文作成のためには生成されたコマンドをターミナル上で実施する必要があります。</br>
+            ※生成されるコマンドは `dejima-test-app` フォルダで実行してください。</br>
+        </p>
+    </div>
+
+    <!-- フォーム切り替えタブ -->
+    <div class="formtabs">
+        <button class="formtablink active" onclick="openForm(event, 'create_mercarius_order_form')">MercariUS注文作成</button>
+        <button class="formtablink" onclick="openForm(event, 'create_bunjang_order_form')">Bunjang注文作成</button>
+    </div>
+
+    <!-- MercariUS注文作成フォーム -->
+    <div id="create_mercarius_order_form" class="formtabcontent" style="display:block;">
+        <h3>MercariUS注文作成</h3>
+        <form id="form_create_mercarius_order">
+            <table>
+                <tr>
+                    <th>登録条件</th>
+                    <td>
+                        <label for="item_count">登録個数：</label><input id="item_count" name="item_count" type="number" value="1" required>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">注文作成</button>
+        </form>
+
+        <h4>実行コマンド</h4>
+        <div id="create-mercarius-order" class="response"></div>
+    </div>
+
+    <!-- Bunjang注文作成フォーム -->
+    <div id="create_bunjang_order_form" class="formtabcontent" style="display:none;">
+        <h3>Bunjang注文作成</h3>
+        <form id="form_create_bunjang_order">
+            <button type="submit">注文作成</button>
+        </form>
+
+        <h4>実行コマンド</h4>
+        <div id="create-bunjang-order" class="response"></div>
+    </div>
+
+    <div id="loading-spinner" style="display: none;"></div>
+
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/shell.js' %}"></script>
 </body>
 </html>
+
+<style>
+.response button {
+    margin-top: 0px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: rgba(0, 123, 255, 1);
+    border-radius: 3px;
+}
+</style>

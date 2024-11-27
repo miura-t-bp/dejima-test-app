@@ -1,46 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // テスト環境オプションを設定
+    const envOptions = [
+        { value: 'dev5', text: 'dev5' },
+        { value: 'dev8', text: 'dev8' },
+        { value: 'dev15', text: 'dev15' },
+        { value: 'dev17', text: 'dev17' }
+    ];
 
-    // タブ切り替え関数
-    window.openTab = function(evt, tabName) {
-        var i, tabcontent, tablinks;
+    // テスト環境プルダウンメニューにオプションを追加
+    const selectElement = document.getElementById('env');
+    envOptions.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.text = option.text;
+        selectElement.appendChild(optionElement);
+    });
 
-        // 全てのタブコンテンツを非表示にする
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
+    // サービスプルダウンの選択肢
+    const serviceOptions = [
+        { value: '-1', text: '--- 未選択 ---' },
+        { value: 'wechat', text: 'WeChat' },
+        { value: 'mercarius', text: 'MercariUS' }
+    ];
 
-        // 全てのタブリンクから"active"クラスを削除する
-        tablinks = document.getElementsByClassName("tablink");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].classList.remove("active");
-        }
-
-        // 選択したタブを表示し、"active"クラスを追加する
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.classList.add("active");
-    };
-
-    // フォーム切り替え関数
-    window.openForm = function(evt, formId) {
-        var i, formtabcontent, formtablinks;
-
-        // 全てのフォームタブコンテンツを非表示にする
-        formtabcontent = document.getElementsByClassName("formtabcontent");
-        for (i = 0; i < formtabcontent.length; i++) {
-            formtabcontent[i].style.display = "none";
-        }
-
-        // 全てのフォームタブリンクから"active"クラスを削除する
-        formtablinks = document.getElementsByClassName("formtablink");
-        for (i = 0; i < formtablinks.length; i++) {
-            formtablinks[i].classList.remove("active");
-        }
-
-        // 選択したフォームを表示し、"active"クラスを追加する
-        document.getElementById(formId).style.display = "block";
-        evt.currentTarget.classList.add("active");
-    };
+    // サービスプルダウンメニューにオプションを追加
+    const serviceSelectElement = document.getElementById('service');
+    serviceOptions.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.text = option.text;
+        serviceSelectElement.appendChild(optionElement);
+    });
 
     // APIを実行する関数
     function callApi(url, form, responseElementId) {
@@ -98,38 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // テスト環境オプションを設定
-    const envOptions = [
-        { value: 'dev3', text: 'dev3' },
-        { value: 'dev8', text: 'dev8' },
-        { value: 'dev15', text: 'dev15' },
-        { value: 'dev17', text: 'dev17' }
-    ];
-
-    // テスト環境プルダウンメニューにオプションを追加
-    const selectElement = document.getElementById('env');
-    envOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.text = option.text;
-        selectElement.appendChild(optionElement);
-    });
-
-    // サービスプルダウンの選択肢
-    const serviceOptions = [
-        { value: '-1', text: '--- 未選択 ---' },
-        { value: 'wechat', text: 'WeChat' },
-        { value: 'mercarius', text: 'MercariUS' }
-    ];
-
-    // サービスプルダウンメニューにオプションを追加
-    const serviceSelectElement = document.getElementById('service');
-    serviceOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.text = option.text;
-        serviceSelectElement.appendChild(optionElement);
-    });
+    // CSRFトークンを取得する関数
+    function getCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
 
     // 荷物登録フォーム送信時の処理
     document.getElementById('form_regist_baggage').addEventListener('submit', function(event) {
@@ -159,9 +121,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
         callApi('http://localhost:8001/selenium/invoice-detail-input/', this, 'invoice-detail-input-response');
     });
-
-    // CSRFトークンを取得する関数
-    function getCSRFToken() {
-        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    }
 });
