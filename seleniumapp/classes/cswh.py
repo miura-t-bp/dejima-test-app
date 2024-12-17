@@ -414,10 +414,10 @@ class CsWh:
             time.sleep(2)
 
             weight_gram_input = self.driver.find_element(By.NAME, "registerWeight[weight_gram]")
-            weight_gram_input.send_keys("500")  # 重量
-            self.driver.find_element(By.NAME, "registerWeight[size_long_mm]").send_keys("100")  # 縦
-            self.driver.find_element(By.NAME, "registerWeight[size_wide_mm]").send_keys("100")  # 横
-            self.driver.find_element(By.NAME, "registerWeight[size_height_mm]").send_keys("100")  # 高さ
+            weight_gram_input.send_keys(weight_gram)  # 重量
+            self.driver.find_element(By.NAME, "registerWeight[size_long_mm]").send_keys(length_mm)  # 縦
+            self.driver.find_element(By.NAME, "registerWeight[size_wide_mm]").send_keys(width_mm)  # 横
+            self.driver.find_element(By.NAME, "registerWeight[size_height_mm]").send_keys(height_mm)  # 高さ
             weight_gram_input.send_keys(Keys.RETURN)
 
             # エラーメッセージが表示されていないか確認
