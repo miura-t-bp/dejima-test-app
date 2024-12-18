@@ -40,6 +40,7 @@
     <div class="formtabs">
         <button class="formtablink active" onclick="openForm(event, 'create_mercarius_order_form')">MercariUS注文作成</button>
         <button class="formtablink" onclick="openForm(event, 'create_bunjang_order_form')">Bunjang注文作成</button>
+        <button class="formtablink" onclick="openForm(event, 'wechat_form')">WeChat関連</button>
     </div>
 
     <!-- MercariUS注文作成フォーム -->
@@ -70,6 +71,30 @@
 
         <h4>実行コマンド</h4>
         <div id="create-bunjang-order" class="response"></div>
+    </div>
+
+    <!-- WeChat関連フォーム -->
+    <div id="wechat_form" class="formtabcontent" style="display:none;">
+        <h3>WeChat注文作成</h3>
+        <form id="form_create_wechat_order">
+            <button type="submit">注文作成</button>
+        </form>
+
+        <h3>WeChat荷物決済</h3>
+        <form id="form_wechat_baggage_settlement">
+            <table>
+                <tr>
+                    <th>荷物番号</th>
+                    <td>
+                        <input id="baggage_number" name="baggage_number" required>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">荷物決済</button>
+        </form>
+
+        <h4>実行コマンド</h4>
+        <div id="wechat" class="response"></div>
     </div>
 
     <div id="loading-spinner" style="display: none;"></div>
