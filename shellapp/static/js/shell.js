@@ -16,20 +16,70 @@ function copyToClipboard(buttonElement) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // テスト環境オプションを設定
-    const envOptions = [
+    const selectElement = document.getElementById('env');
+
+    // 初期選択肢
+    const defaultOptions = [
         { value: 'dev17', text: 'dev17' },
-        { value: 'local', text: 'local'},
+        { value: 'local', text: 'local' },
     ];
 
-    // テスト環境プルダウンメニューにオプションを追加
-    const selectElement = document.getElementById('env');
-    envOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.text = option.text;
-        selectElement.appendChild(optionElement);
-    });
+    // localStorage から選択肢をロードする
+    function loadOptions() {
+        const savedOptions = localStorage.getItem('envOptions');
+        if (savedOptions) {
+            return JSON.parse(savedOptions);
+        }
+        return defaultOptions; // 保存されたデータがない場合はデフォルト選択肢を使用
+    }
+
+    // 選択肢を保存する
+    function saveOptions(options) {
+        localStorage.setItem('envOptions', JSON.stringify(options));
+    }
+
+    // プルダウンメニューに選択肢を反映
+    function populateOptions(options) {
+        selectElement.innerHTML = ''; // 既存の選択肢をクリア
+        options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.value;
+            optionElement.text = option.text;
+            selectElement.appendChild(optionElement);
+        });
+    }
+
+    // 選択肢を追加する
+    window.addOption = function() {
+        const dev = document.getElementById('newOptionValue').value.trim();
+
+        if (dev) {
+            const options = loadOptions();
+            options.push({ value: dev, text: dev }); // 選択肢を追加
+            saveOptions(options); // 保存
+            populateOptions(options); // 更新
+            document.getElementById('newOptionValue').value = '';
+        } else {
+            alert('追加する環境を入力してください。');
+        }
+    };
+
+    // 選択肢を削除する
+    window.removeSelectedOption = function() {
+        const selectedIndex = selectElement.selectedIndex;
+
+        if (selectedIndex >= 0) {
+            const options = loadOptions();
+            options.splice(selectedIndex, 1); // 選択肢を削除
+            saveOptions(options); // 保存
+            populateOptions(options); // 更新
+        } else {
+            alert('削除する選択肢を選んでください。');
+        }
+    };
+
+    // ページロード時に選択肢を復元
+    populateOptions(loadOptions());
 
     // APIを実行する関数
     function callApi(url, form, responseElementId) {
