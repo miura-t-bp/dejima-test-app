@@ -17,12 +17,9 @@
 NOW_DIR=$(dirname "$0")
 
 domain=$1
-if [[ "$domain" == "dejima.local" ]]; then
-    # DBからデータを取得するシェルスクリプトのパス
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_local.sh"
-else
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_stg.sh"
-fi
+
+# DBからデータを取得するシェルスクリプトのパス
+GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/$(sh $NOW_DIR/db/get_file_by_domain.sh $domain)"
 
 # 最新のWeChat注文番号を取得
 latest_wechat_order_number=$(sh $GET_DB_DATA_SHELL_FILE "SELECT wechat_order_number FROM order_shopping_wechat ORDER BY id DESC LIMIT 1;")

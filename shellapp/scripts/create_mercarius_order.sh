@@ -15,14 +15,15 @@
 NOW_DIR=$(dirname "$0")
 
 domain=$1
+
+# DBからデータを取得するシェルスクリプトのパス
+GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/$(sh $NOW_DIR/db/get_file_by_domain.sh $domain)"
+
 if [[ "$domain" == "dejima.local" ]]; then
     # client_idとsecret_client_idが記載された設定ファイルのパス
     CONFIG_FILE="/etc/shellapp/app.local.conf"
-    # DBからデータを取得するシェルスクリプトのパス
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_local.sh"
 else
     CONFIG_FILE="/etc/shellapp/app.dev.conf"
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_stg.sh"
 fi
 
 # ファイルの存在確認

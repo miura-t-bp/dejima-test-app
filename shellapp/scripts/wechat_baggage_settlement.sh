@@ -13,12 +13,9 @@
 NOW_DIR=$(dirname "$0")
 
 domain=$1
-if [[ "$domain" == "dejima.local" ]]; then
-    # DBからデータを取得するシェルスクリプトのパス
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_local.sh"
-else
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_stg.sh"
-fi
+
+# DBからデータを取得するシェルスクリプトのパス
+GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/$(sh $NOW_DIR/db/get_file_by_domain.sh $domain)"
 
 # JSON用のデータを用意
 baggage_number=$2
@@ -55,7 +52,8 @@ unsettled_storage_cost=$(echo "$original_unsettled_storage_cost * $gude_rate" | 
 total_amount=$(echo "$original_total_amount * $gude_rate" | bc)
 
 # JSONデータを作成
-json_data="{\"baggage_number\":\"$baggage_number\",\"payment\":{\"original_total_amount\":\"$original_total_amount\",\"total_amount\":\"$total_amount\",\"original_total_pack_fee\":\"$original_total_pack_fee\",\"total_pack_fee\":\"$total_pack_fee\",\"original_total_bundle_fee\":\"$original_total_bundle_fee\",\"total_bundle_fee\":\"$total_bundle_fee\",\"original_total_photo_fee\":\"$original_total_photo_fee\",\"total_photo_fee\":\"$total_photo_fee\",\"original_international_delivery_fee\":\"$original_international_delivery_fee\",\"international_delivery_fee\":\"$international_delivery_fee\",\"original_international_delivery_insurance_fee\":\"$original_international_delivery_insurance_fee\",\"international_delivery_insurance_fee\":\"$international_delivery_insurance_fee\",\"original_customs_clearance_commission_fee\":\"$original_customs_clearance_commission_fee\",\"customs_clearance_commission_fee\":\"$customs_clearance_commission_fee\",\"original_delivery_service_fee\":\"$original_delivery_service_fee\",\"delivery_service_fee\":\"$delivery_service_fee\",\"original_unsettled_storage_cost\":\"$original_unsettled_storage_cost\",\"unsettled_storage_cost\":\"$unsettled_storage_cost\",\"coupon_discount_amount\":$coupon_discount_amount,\"coupon_discount_type\":$coupon_discount_type,\"wechat_settlement_id\":123321,\"wechatpay_transation_id\":\"234432\",\"fintech_transation_id\":\"345543\",\"wechatpay_rate\":\"$wechatpay_rate\",\"gude_rate\":\"$gude_rate\"},\"shipment\":{\"shipping_fee\":0,\"country_code_iso_3166_alpha_2_code\":\"CN\",\"zip_code\":\"110000\",\"state\":\"北京\",\"city\":\"北京市\",\"town\":\"丰台区\",\"district\":\"街道\",\"full_address\":\"123北京市54321\",\"recipient_name\":\"受取人名\",\"tel\":\"090012345678\",\"fax\":null},\"international_delivery_method_id\":36,\"event_code\":\"regist_sttlement_and_delivery_info\"}"
+international_delivery_method_id=36
+json_data="{\"baggage_number\":\"$baggage_number\",\"payment\":{\"original_total_amount\":\"$original_total_amount\",\"total_amount\":\"$total_amount\",\"original_total_pack_fee\":\"$original_total_pack_fee\",\"total_pack_fee\":\"$total_pack_fee\",\"original_total_bundle_fee\":\"$original_total_bundle_fee\",\"total_bundle_fee\":\"$total_bundle_fee\",\"original_total_photo_fee\":\"$original_total_photo_fee\",\"total_photo_fee\":\"$total_photo_fee\",\"original_international_delivery_fee\":\"$original_international_delivery_fee\",\"international_delivery_fee\":\"$international_delivery_fee\",\"original_international_delivery_insurance_fee\":\"$original_international_delivery_insurance_fee\",\"international_delivery_insurance_fee\":\"$international_delivery_insurance_fee\",\"original_customs_clearance_commission_fee\":\"$original_customs_clearance_commission_fee\",\"customs_clearance_commission_fee\":\"$customs_clearance_commission_fee\",\"original_delivery_service_fee\":\"$original_delivery_service_fee\",\"delivery_service_fee\":\"$delivery_service_fee\",\"original_unsettled_storage_cost\":\"$original_unsettled_storage_cost\",\"unsettled_storage_cost\":\"$unsettled_storage_cost\",\"coupon_discount_amount\":$coupon_discount_amount,\"coupon_discount_type\":$coupon_discount_type,\"wechat_settlement_id\":123321,\"wechatpay_transation_id\":\"234432\",\"fintech_transation_id\":\"345543\",\"wechatpay_rate\":\"$wechatpay_rate\",\"gude_rate\":\"$gude_rate\"},\"shipment\":{\"shipping_fee\":0,\"country_code_iso_3166_alpha_2_code\":\"CN\",\"zip_code\":\"110000\",\"state\":\"北京\",\"city\":\"北京市\",\"town\":\"丰台区\",\"district\":\"街道\",\"full_address\":\"123北京市54321\",\"recipient_name\":\"受取人名\",\"tel\":\"090012345678\",\"fax\":null},\"international_delivery_method_id\":$international_delivery_method_id,\"event_code\":\"regist_sttlement_and_delivery_info\"}"
 
 # アクセストークンを取得
 access_token=$(sh $NOW_DIR/wechat/get_access_token.sh $domain)

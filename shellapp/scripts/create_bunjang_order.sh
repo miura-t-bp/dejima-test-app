@@ -13,12 +13,9 @@
 NOW_DIR=$(dirname "$0")
 
 domain=$1
-if [[ "$domain" == "dejima.local" ]]; then
-    # DBからデータを取得するシェルスクリプトのパス
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_local.sh"
-else
-    GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/get_data_from_stg.sh"
-fi
+
+# DBからデータを取得するシェルスクリプトのパス
+GET_DB_DATA_SHELL_FILE="$NOW_DIR/db/$(sh $NOW_DIR/db/get_file_by_domain.sh $domain)"
 
 # 最新のBunjang注文番号を取得
 latest_bunjang_order_number=$(sh $GET_DB_DATA_SHELL_FILE "SELECT bunjang_order_number FROM order_shopping_bunjang ORDER BY id DESC LIMIT 1;")
@@ -29,7 +26,6 @@ today=$(date +"%y%m%d")
 if [[ "$date_of_latest_bunjang_order_number" == "$today" ]]; then
     num=${latest_bunjang_order_number:8:3}
     new_bunjang_order_number="BJ${today}$(printf "%03d" $((10#$num + 1)))"
-
 else
     new_bunjang_order_number="BJ${today}001"
 fi
