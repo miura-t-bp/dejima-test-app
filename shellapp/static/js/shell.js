@@ -18,11 +18,12 @@ function copyToClipboard(buttonElement) {
 document.addEventListener('DOMContentLoaded', function() {
     const selectElement = document.getElementById('env');
 
-    // 初期選択肢
-    const defaultOptions = [
-        { value: 'dev17', text: 'dev17' },
-        { value: 'local', text: 'local' },
-    ];
+    // 初期選択肢(dev17までとローカル)
+    const defaultOptions = Array.from({ length: 17 }, (_, i) => {
+        const value = `dev${i + 1}`;
+        return { value, text: value };
+    });
+    defaultOptions.push({ value: 'local', text: 'local' });
 
     // localStorage から選択肢をロードする
     function loadOptions() {
