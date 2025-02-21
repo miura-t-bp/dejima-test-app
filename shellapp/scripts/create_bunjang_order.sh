@@ -37,16 +37,26 @@ if [[ -n "$bunjang_order" ]]; then
     exit 1
 fi
 
-# メルカリ商品検索APIからフィギュアカテゴリの任意の商品を取得
-category_id=81
-items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id 1)
-item_data=$(echo "$items" | jq -c '.[]')
+# 引数から商品IDを取得
+item_id=$2
+
+# 商品情報JSONデータを作成
+if [[ -n "$item_id" ]]; then
+    # 引数で商品IDが指定されている場合は、商品情報をメルカリ商品検索APIから取得
+    item_data=$(sh $NOW_DIR/mercari_api/get_prd_item_detail.sh $item_id)
+else
+    # その他の場合は、メルカリ商品検索APIからフィギュアカテゴリの任意の商品を取得
+    category_id=81
+    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id 1)
+    item_data=$(echo "$items" | jq -c '.[]')
+fi
 
 item_code=$(echo "$item_data" | jq -r '.id')
 item_name=$(echo "$item_data" | jq -r '.name')
 item_image_url=$(echo "$item_data" | jq -r '.photos[0]')
 item_price=$(echo "$item_data" | jq -r '.price')
 item_price_fx=$((item_price * 10))  # 日本円の金額にを10倍したものを韓国ウォンの金額とする
+category_id=$(echo "$item_data" | jq -r '.item_category.id')
 seller_id=$(echo "$item_data" | jq -r '.seller.id')
 seller_name=$(echo "$item_data" | jq -r '.seller.name')
 

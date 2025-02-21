@@ -57,23 +57,38 @@ if [[ -n "$mercarius_order" ]]; then
     exit 1
 fi
 
-# 引数で指定された数のフィギュアカテゴリ商品情報をメルカリ商品検索APIから取得
-category_id=81
+# 引数から使用する商品数と商品IDを取得
 limit=$2
-items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id $limit)
+item_id=$3
 
-# item_dataを1つずつ処理し、指定された数の商品情報含む商品情報のJSONデータを作成
-items_json=""
-while read -r item; do
+# 商品情報JSONデータを作成
+if [[ "$limit" -eq 1 && -n "$item_id" ]]; then
+    # 引数で商品IDが指定されている場合は、商品情報をメルカリ商品検索APIから取得
+    item=$(sh $NOW_DIR/mercari_api/get_prd_item_detail.sh $item_id)
+
     item_code=$(echo "$item" | jq -r '.id')
     item_price=$(echo "$item" | jq -r '.price')
     item_price_fx=$(echo "$item_price * 0.01" | bc)  # 日本円の金額にを0.01倍したものをUSDの金額とする
 
-    if [[ -n "$items_json" ]]; then
-        items_json+=","
-    fi
-    items_json+="{\"us_item_code\":\"$item_code\",\"jp_item_code\":\"$item_code\",\"us_category_id\":\"123\",\"us_category_name\":\"figure\",\"item_name_en\":\"GokuFigure\",\"item_price_usd\":$item_price_fx}"
-done < <(echo "$items" | jq -c '.[]')
+    items_json="{\"us_item_code\":\"$item_code\",\"jp_item_code\":\"$item_code\",\"us_category_id\":\"123\",\"us_category_name\":\"figure\",\"item_name_en\":\"GokuFigure\",\"item_price_usd\":$item_price_fx}"
+else
+    # その他の場合は、指定された数のフィギュアカテゴリ商品情報をメルカリ商品検索APIから取得
+    category_id=81
+    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id $limit)
+
+    # item_dataを1つずつ処理し、指定された数の商品情報含む商品情報のJSONデータを作成
+    items_json=""
+    while read -r item; do
+        item_code=$(echo "$item" | jq -r '.id')
+        item_price=$(echo "$item" | jq -r '.price')
+        item_price_fx=$(echo "$item_price * 0.01" | bc)  # 日本円の金額にを0.01倍したものをUSDの金額とする
+
+        if [[ -n "$items_json" ]]; then
+            items_json+=","
+        fi
+        items_json+="{\"us_item_code\":\"$item_code\",\"jp_item_code\":\"$item_code\",\"us_category_id\":\"123\",\"us_category_name\":\"figure\",\"item_name_en\":\"GokuFigure\",\"item_price_usd\":$item_price_fx}"
+    done < <(echo "$items" | jq -c '.[]')
+fi
 
 # 送信するJSONデータを作成
 json_data="{\"client_id\":\"$client_id\",\"secret_client_id\":\"$mercarius_secret_client_id\",\"items\":[$items_json],\"payment\":{\"fx_rate\":0.01},\"shipment\":{\"country_code\":\"US\",\"zip_code\":\"92802\",\"state\":\"California\",\"city\":\"Anaheim\",\"street_address\":\"Test Street\",\"additional_address\":\"Test Additional Address\",\"recipient_name\":\"Test Recipient Name\",\"tel\":\"09012345678\"},\"buyer_id\":\"112358\",\"buyer_email_address\":\"test.test39@gmail.com\",\"create_time\":\"1708883761\",\"ordersn\":\"$new_mercarius_order_number\"}"
