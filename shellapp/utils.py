@@ -8,12 +8,13 @@ def generate_cmd_for_create_mercarius_order(data):
     # 実行環境と作成する注文の商品数を取得
     env = data.get("env")
     item_count = data.get("item_count")
+    item_id = data.get("item_id")
 
     # 実行環境からドメインを取得
     domain = get_domain_by_env(env)
 
     # コマンドを生成し返す
-    cmd = f"bash shellapp/scripts/create_mercarius_order.sh {domain} {item_count}"
+    cmd = f"bash shellapp/scripts/create_mercarius_order.sh {domain} {item_count} {item_id}".strip()
     return {
         "cmd": cmd,
     }
@@ -21,12 +22,13 @@ def generate_cmd_for_create_mercarius_order(data):
 def generate_cmd_for_create_bunjang_order(data):
     # 実行環境を取得
     env = data.get("env")
+    item_id = data.get("item_id")
 
     # 実行環境からドメインを取得
     domain = get_domain_by_env(env)
 
     # コマンドを生成し返す
-    cmd = f"bash shellapp/scripts/create_bunjang_order.sh {domain}"
+    cmd = f"bash shellapp/scripts/create_bunjang_order.sh {domain} {item_id}".strip()
     return {
         "cmd": cmd,
     }

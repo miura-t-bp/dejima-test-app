@@ -58,7 +58,8 @@
                 <tr>
                     <th>登録条件</th>
                     <td>
-                        <label for="item_count">登録個数：</label><input id="item_count" name="item_count" type="number" value="1" required>
+                        <label for="item_count">登録個数：</label><input id="item_count" name="item_count" type="number" value="1" required><br>
+                        <label for="item_id">メルカリ商品ID：</label><input id="item_id" name="item_id" placeholder="m11111111111">
                     </td>
                 </tr>
             </table>
@@ -73,6 +74,14 @@
     <div id="create_bunjang_order_form" class="formtabcontent" style="display:none;">
         <h3>Bunjang注文作成</h3>
         <form id="form_create_bunjang_order">
+            <table>
+                <tr>
+                    <th>登録条件</th>
+                    <td>
+                        <label for="item_id">メルカリ商品ID：</label><input id="item_id" name="item_id" placeholder="m11111111111">
+                    </td>
+                </tr>
+            </table>
             <button type="submit">注文作成</button>
         </form>
 
