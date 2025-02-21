@@ -1,11 +1,15 @@
 # dejima-test-app
 
-このアプリは `dev` 環境でのみテストを行うことができるもので、Selenium を使用して自動テストを行います。
+こちらはシェルスクリプトや Selenium を使用して自動テストを行うことができるアプリです。
+シェルスクリプトを使用するものと Selenium を使用するもので、ページを分けており、画面上部のボタンから切り替えが可能になります。
 
 ## 特徴
 
-- **`dev` 環境専用**：本アプリケーションは `dev` 環境でのテスト実行にのみ使用します。
-- **Selenium 設定**：Selenium の環境設定は `seleniumapp/static/js/main.js` で定義されている `envOptions` 配列にて行います。
+### テスト環境
+- **テスト環境の選択肢を管理**のフォームから選択肢を追加・削除可能
+- 動作可能環境
+  - Shellアプリ：dev環境とlocal環境で動作可能
+  - Seleniumアプリ：dev環境のみで動作可能
 
 ## 初期設定
 
@@ -17,20 +21,11 @@
 docker-compose up -d --build
 ```
 
-### 環境設定
-
-- テスト環境のドメインなどは、`seleniumapp/static/js/main.js` で定義されている `envOptions` 配列で設定可能です。
-
-  ```javascript
-  const envOptions = [
-      { value: 'dev3', text: 'dev3' },
-      { value: 'dev8', text: 'dev8' },
-      { value: 'dev15', text: 'dev15' },
-      { value: 'dev17', text: 'dev17' }
-  ];
-  ```
+※DBから値を取得するため、踏み台サーバ上でグローバル関数の定義が必要になる場合があります。
 
 ## 使用方法
+
+### Seleniumアプリ
 
 1. Docker コンテナが起動していることを確認します。
 2. ブラウザで `http://localhost:8001/selenium/` にアクセスし、アプリケーション画面を表示します。
@@ -78,7 +73,6 @@ def regist_baggage(data):
         pass
     except Exception as e:
         logger.error(f"エラーが発生しました: {e}")
-
 ```
 </details>
 
