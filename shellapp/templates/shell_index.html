@@ -47,6 +47,7 @@
     <div class="formtabs">
         <button class="formtablink active" onclick="openForm(event, 'create_mercarius_order_form')">MercariUS注文作成</button>
         <button class="formtablink" onclick="openForm(event, 'create_bunjang_order_form')">Bunjang注文作成</button>
+        <button class="formtablink" onclick="openForm(event, 'create_shopee_order_form')">Shopee注文作成</button>
         <button class="formtablink" onclick="openForm(event, 'wechat_form')">WeChat関連</button>
     </div>
 
@@ -87,6 +88,31 @@
 
         <h4>実行コマンド</h4>
         <div id="create-bunjang-order" class="response"></div>
+    </div>
+
+    <!-- Shopee注文作成フォーム -->
+    <div id="create_shopee_order_form" class="formtabcontent" style="display:none;">
+        <div class="notice">
+            <p>
+                ※Shopee注文は専用のサーバー上で注文を作成するため、ローカル以外の場合ドメインは固定です。</br>
+                ※ローカル以外の場合、第一引数には`stg`を指定します</br>
+            </p>
+        </div>
+        <p></p>
+        <form id="form_create_shopee_order">
+            <table>
+                <tr>
+                    <th>登録条件</th>
+                    <td>
+                        <label for="item_id">メルカリ商品ID：</label><input id="item_id" name="item_id" placeholder="m11111111111">
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">注文作成</button>
+        </form>
+
+        <h4>実行コマンド</h4>
+        <div id="create-shopee-order" class="response"></div>
     </div>
 
     <!-- WeChat関連フォーム -->

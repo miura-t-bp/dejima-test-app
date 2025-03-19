@@ -151,6 +151,14 @@ document.addEventListener('DOMContentLoaded', function() {
         callApi('http://localhost:8001/shell/create-bunjang-order/', this, 'create-bunjang-order');
     });
 
+    // Shopee注文作成フォーム送信時の処理
+    document.getElementById('form_create_shopee_order').addEventListener('submit', function(event) {
+        event.preventDefault(); // デフォルト送信動作を防止
+
+        // APIリクエストを実行
+        callApi('http://localhost:8001/shell/create-shopee-order/', this, 'create-shopee-order');
+    });
+
     // WeChat注文作成フォーム送信時の処理
     document.getElementById('form_create_wechat_order').addEventListener('submit', function(event) {
         event.preventDefault(); // デフォルト送信動作を防止
