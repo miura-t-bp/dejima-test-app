@@ -82,4 +82,20 @@ curl -X POST $url \
      -H "Content-Type: application/json" \
      -d "$json_data" \
      --insecure
+echo \
 
+# 注文作成が成功しているか確認
+sql="
+SELECT bo.id, bo.order_number FROM order_shopping os
+INNER JOIN buyee_order bo ON os.order_id = bo.id
+INNER JOIN order_shopping_bunjang osb ON os.id = osb.order_shopping_id
+WHERE osb.bunjang_order_number = '$new_bunjang_order_number';
+"
+read new_order_id new_order_number < <(sh "$GET_DB_DATA_SHELL_FILE" "$sql")
+
+# 注文作成が成功している場合は、CSメルカリ注文詳細画面のURLを表示
+if [[ -n "$new_order_id" ]]; then
+    echo "Bunjang注文を作成しました。Buyee注文番号: $new_order_number"
+    echo "◆CSメルカリ注文詳細画面"
+    echo "https://cs.$domain/shopping/mercariDetail/order_id/$new_order_id"
+fi
