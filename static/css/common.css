@@ -210,3 +210,16 @@ button:hover {
     color: #ff695b;
     font-weight: bold;
 }
+
+.radio-group {
+    display: inline-block;
+    width: 90%;
+}
+
+.radio-group label {
+    display: inline-block;
+}
+
+.radio-group input[type="radio"] {
+    width: 30px;
+}

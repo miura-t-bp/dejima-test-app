@@ -37,8 +37,9 @@ if [[ -n "$bunjang_order" ]]; then
     exit 1
 fi
 
-# 引数から商品IDを取得
-item_id=$2
+# 引数から使用する商品のセラータイプ(C2CかB2C)と商品IDを取得
+marketplace=$2
+item_id=$3
 
 # 商品情報JSONデータを作成
 if [[ -n "$item_id" ]]; then
@@ -47,7 +48,7 @@ if [[ -n "$item_id" ]]; then
 else
     # その他の場合は、メルカリ商品検索APIからフィギュアカテゴリの任意の商品を取得
     category_id=81
-    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id 1)
+    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id $marketplace 1)
     item_data=$(echo "$items" | jq -c '.[]')
 fi
 
@@ -58,10 +59,20 @@ item_price=$(echo "$item_data" | jq -r '.price')
 item_price_fx=$((item_price * 10))  # 日本円の金額にを10倍したものを韓国ウォンの金額とする
 category_id=$(echo "$item_data" | jq -r '.item_category.id')
 seller_id=$(echo "$item_data" | jq -r '.seller.id')
+if [[ "$marketplace" == "c2c" ]]; then
+    seller_id=$(echo "$item_data" | jq -r '.seller.id')  # C2Cの場合はseller.idをseller_idとして使用
+elif [[ "$marketplace" == "b2c" ]]; then
+    seller_id=$(echo "$item_data" | jq -r '.seller.shop_id')  # B2Cの場合はseller.shop_idをseller_idとして使用
+fi
 seller_name=$(echo "$item_data" | jq -r '.seller.name')
 
 # JSONデータを作成
-json_data="{\"items\":[{\"item_code\":\"$item_code\",\"product_code\":null,\"item_name\":\"$item_name\",\"quantity\":1,\"sku\":\"$item_code\",\"item_url\":\"https://www.mercari.com/jp/items/$item_code/\",\"item_image_url\":\"$item_image_url\",\"original_item_price\":$item_price,\"bunjang_item_id\":\"276867251\",\"item_price_fx\":\"$item_price_fx\",\"item_price\":$item_price,\"seller\":{\"id\":$seller_id,\"name\":\"$seller_name\"},\"item_can_buy\":true,\"category_id\":$category_id,\"shipping_payer_id\":1,\"sub_ordersn\":63965903,\"is_authenticity\":false}],\"payment\":{\"fx_rate\":null},\"shipment\":{\"country_code_iso_3166_alpha_2_code\":\"KR\",\"zip_code\":\"15826\",\"state\":\"test\",\"city\":\"test\",\"town\":\"\",\"district\":\"\",\"full_address\":\"full address test\",\"recipient_name\":\"test\",\"tel\":\"09012345678\",\"fax\":null,\"personal_customs_clearance_code\":\"P123456789876\"},\"ordersn\":\"$new_bunjang_order_number\",\"buyer_username\":\"test buyer name\",\"create_time\":1708883761,\"country_code\":\"KR\",\"currency_code\":\"KRW\",\"bunjang_shop_code\":\"bunjang-shop-code\"}"
+json_data="{\"items\":[{\"item_code\":\"$item_code\",\"product_code\":null,\"item_name\":\"$item_name\",\"quantity\":1,\"sku\":\"$item_code\",\"item_url\":\"https://www.mercari.com/jp/items/$item_code/\",\"item_image_url\":\"$item_image_url\",\"original_item_price\":$item_price,\"bunjang_item_id\":\"276867251\",\"item_price_fx\":\"$item_price_fx\",\"item_price\":$item_price,\"seller\":{\"id\":\"$seller_id\",\"name\":\"$seller_name\"},\"item_can_buy\":true,\"category_id\":$category_id,\"shipping_payer_id\":1,\"sub_ordersn\":63965903,\"is_authenticity\":false}],\"payment\":{\"fx_rate\":null},\"shipment\":{\"country_code_iso_3166_alpha_2_code\":\"KR\",\"zip_code\":\"15826\",\"state\":\"test\",\"city\":\"test\",\"town\":\"\",\"district\":\"\",\"full_address\":\"full address test\",\"recipient_name\":\"test\",\"tel\":\"09012345678\",\"fax\":null,\"personal_customs_clearance_code\":\"P123456789876\"},\"ordersn\":\"$new_bunjang_order_number\",\"buyer_username\":\"test buyer name\",\"create_time\":1708883761,\"country_code\":\"KR\",\"currency_code\":\"KRW\",\"bunjang_shop_code\":\"bunjang-shop-code\"}"
+# B2Cの場合はitemsにvariant_idの項目を追加
+if [[ "$marketplace" == "b2c" ]]; then
+    variant_id=$(echo "$item_data" | jq -r '.item_variants[0].id')
+    json_data=$(echo "$json_data" | jq -c --arg variant_id "$variant_id" '.items |= map(. + {"variant_id":$variant_id})')
+fi
 
 echo "Bunjang注文を作成します。item_code: $item_code, bunjang_order_number: $new_bunjang_order_number"
 

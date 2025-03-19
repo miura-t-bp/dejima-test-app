@@ -44,7 +44,7 @@ fi
 
 # メルカリ商品検索APIからフィギュアカテゴリの任意の商品を取得
 category_id=81
-items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id 1)
+items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id "c2c" 1)
 item_data=$(echo "$items" | jq -c '.[]')
 
 # JSON用のデータを用意

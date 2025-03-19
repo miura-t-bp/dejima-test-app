@@ -22,13 +22,14 @@ def generate_cmd_for_create_mercarius_order(data):
 def generate_cmd_for_create_bunjang_order(data):
     # 実行環境を取得
     env = data.get("env")
+    marketplace = data.get("marketplace")
     item_id = data.get("item_id")
 
     # 実行環境からドメインを取得
     domain = get_domain_by_env(env)
 
     # コマンドを生成し返す
-    cmd = f"bash shellapp/scripts/create_bunjang_order.sh {domain} {item_id}".strip()
+    cmd = f"bash shellapp/scripts/create_bunjang_order.sh {domain} {marketplace} {item_id}".strip()
     return {
         "cmd": cmd,
     }

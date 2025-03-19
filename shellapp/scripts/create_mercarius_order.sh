@@ -74,7 +74,7 @@ if [[ "$limit" -eq 1 && -n "$item_id" ]]; then
 else
     # その他の場合は、指定された数のフィギュアカテゴリ商品情報をメルカリ商品検索APIから取得
     category_id=81
-    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id $limit)
+    items=$(sh $NOW_DIR/mercari_api/get_prd_item.sh $category_id "c2c" $limit)
 
     # item_dataを1つずつ処理し、指定された数の商品情報含む商品情報のJSONデータを作成
     items_json=""
