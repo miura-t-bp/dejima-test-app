@@ -24,6 +24,14 @@ from seleniumapp.error_handling import handle_no_such_element_exception
 LOGIN_ID = "stgcs01@buyee.jp"
 LOGIN_PASSWORD = "11111111"
 
+WAREHOUSE_PREFIX_MAP = {
+    "日野" : "W",
+    "北柏" : "K",
+    "南港" : "G",
+    "所沢" : "A",
+    "平和島" : "B",
+}
+
 '''
 CS・WH関連操作クラス
 '''
@@ -322,7 +330,7 @@ class CsWh:
 
     def regist_baggage(self, order_number, baggage_number = None) -> str:
         """
-        日野倉庫で荷物登録を行う
+        荷物が保管されている倉庫で荷物登録を行う
         - 登録する荷物の荷物番号の日付の部分は登録時の日付、下四桁は注文番号の下四桁を使用
 
         Args:
@@ -343,10 +351,7 @@ class CsWh:
             # 荷物登録用検索画面にアクセス
             self.driver.get(self.main_wh_url + "index.php/regist/search")
 
-            # 荷物番号が指定されいない場合は注文番号から生成
-            baggage_number = baggage_number if baggage_number else "W" + datetime.now().strftime("%y%m%d") + order_number[-4:]
-
-            # 荷物登録画面のN注文番号の検索フォームに注文番号を入力
+            # 荷物登録画面で、該当の注文番号の検索フォームに注文番号を入力
             input_element = self.driver.find_element(By.XPATH, "//input[@name='registSearch[order_number]' and @value='" + order_number[0] + "']")
             input_element.clear()
             input_element.send_keys(order_number)
@@ -361,6 +366,16 @@ class CsWh:
                 raise ScreenError("この注文は荷物登録済みです。", self.driver.current_url)
             except NoSuchElementException:
                 pass
+
+            # 保管倉庫を取得
+            warehouse_info = self.driver.find_element(By.ID, "hearder_baggag_status").text
+            warehouse_str = re.search(r'保管倉庫：(.+)', warehouse_info).group(1)
+
+            # 保管倉庫に対応する荷物番号prefixを取得
+            prefix = WAREHOUSE_PREFIX_MAP.get(warehouse_str)
+
+            # 荷物番号が指定されいない場合は注文番号から生成
+            baggage_number = baggage_number if baggage_number else prefix + datetime.now().strftime("%y%m%d") + order_number[-4:]
 
             # 荷物登録
             self.driver.find_element(By.NAME, "registBaggage[baggage_number]").send_keys(baggage_number)
