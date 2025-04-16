@@ -163,6 +163,13 @@ document.addEventListener('DOMContentLoaded', function() {
         callApi('http://localhost:8001/selenium/bundle-baggage/', this, 'bundle-baggage-response');
     });
 
+    // ショピング代理購入フォーム送信時の処理
+    document.getElementById('form_proxy_shopping').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        callApi('http://localhost:8001/selenium/proxy-shopping/', this, 'proxy-shopping-response');
+    });
+
     // インボイス詳細登録フォーム送信時の処理
     document.getElementById('form_invoice_detail_input').addEventListener('submit', function(event) {
         event.preventDefault();

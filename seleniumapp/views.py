@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import JsonResponse
 
-from .utils import regist_baggage, bundle_baggage, regist_baggage_weight, invoice_detail_input
+from .utils import regist_baggage, bundle_baggage, regist_baggage_weight, proxy_shopping, invoice_detail_input
 
 import json
 
@@ -49,6 +49,20 @@ def regist_baggage_weight_api(request):
 
         # 同梱作業チェック完了
         res = regist_baggage_weight(data)
+
+        return JsonResponse(res)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def proxy_shopping_api(request):
+    if request.method == 'POST':
+        # リクエストのボディからJSONデータを取得
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        res = proxy_shopping(data)
 
         return JsonResponse(res)
 

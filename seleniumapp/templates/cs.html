@@ -1,10 +1,29 @@
 <!-- フォーム切り替えタブ -->
 <div class="formtabs">
-    <button class="formtablink active" onclick="openForm(event, 'invoice_detail_input')">インボイス詳細登録（DHL）</button>
+    <button class="formtablink active" onclick="openForm(event, 'proxy_shopping')">ショピング代理購入</button>
+    <button class="formtablink" onclick="openForm(event, 'invoice_detail_input')">インボイス詳細登録（DHL）</button>
+</div>
+
+<!-- ショピング代理購入フォーム -->
+<div id="proxy_shopping" class="formtabcontent" style="display:block;">
+    <h3>ショピング代理購入</h3>
+    <form id="form_proxy_shopping">
+        <table>
+            <tr>
+                <th>ebay注文番号</th>
+                <td>
+                    <input id="ebay_order_number" name="ebay_order_number"><br>
+                </td>
+            </tr>
+        </table>
+        <button type="submit">代理購入</button>
+    </form>
+    <h4>実行結果</h4>
+    <div id="proxy-shopping-response" class="response"></div>
 </div>
 
 <!-- インボイス詳細登録（DHL）フォーム -->
-<div id="invoice_detail_input" class="formtabcontent" style="display:block;">
+<div id="invoice_detail_input" class="formtabcontent" style="display:none;">
     <h3>インボイス詳細登録（DHL）</h3>
     <form id="form_invoice_detail_input">
         <table>

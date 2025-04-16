@@ -278,6 +278,152 @@ class CsWh:
         order_number_column.click()
         input()
 
+    def proxy_shopping_by_ebay_order_number(self, ebay_order_number) -> None:
+        """
+        ebay注文番号に紐付くショッピング注文の、代理購入を行う
+
+        Args:
+            ebay_order_number (str): 代理購入を行う注文のebay注文番号
+
+        Returns:
+            None: なし
+
+        Raises:
+            Exception: 代理購入が失敗した場合、エラーメッセージと共に例外を発生させます。
+        """
+        try:
+            # CS管理画面にログイン
+            if not self.is_logged_in_cs:
+                self.login_cs()
+
+            # 代理購入済みの注文番号リスト
+            proxy_shopping_completed_order_numbers = []
+
+            while True:
+                # ショッピング注文検索ページにアクセス
+                self.driver.get(self.main_cs_url + "shopping/search")
+
+                # ebay注文番号を入力
+                ebay_order_number_input = self.driver.find_element(By.NAME, "search[ebay_order_number]")
+                ebay_order_number_input.clear()
+                ebay_order_number_input.send_keys(ebay_order_number)
+
+                # 検索ボタンをクリック
+                self.driver.find_element(By.CLASS_NAME, "search_order_btn").click()
+
+                # whileループ終了フラグ
+                end_while_loop = True
+
+                # 検索結果のテーブルを取得
+                table = self.driver.find_element(By.ID, "data_table")
+
+                # テーブルの行それぞれに対し処理を行う
+                rows = table.find_elements(By.XPATH, "./tbody/tr")
+                for i in range(2, len(rows) + 1):
+                    # 行を取得
+                    row = table.find_element(By.XPATH, "./tbody/tr[" + str(i) + "]")
+
+                    # 注文ステータスの行を取得
+                    status_column = row.find_element(By.XPATH, "./td[2]")
+
+                    if status_column.text == "代理購入待ち":
+                        # 注文ステータスが「代理購入待ち」の場合、注文詳細画面に遷移し、代理購入を行う
+                        order_number_column = row.find_element(By.XPATH, "./td[4]/a")
+
+                        # 代理購入を行う
+                        order_number = self.proxy_shopping(order_number_column.get_attribute("href"))
+
+                        # 代理購入が完了したら、次のループに進む
+                        proxy_shopping_completed_order_numbers.append(order_number)
+
+                        # forループを終了し、次のwhileループに進む
+                        end_while_loop = False
+                        break
+
+                # 代理購入待ちの注文がない場合、ループを抜ける
+                if end_while_loop:
+                    break
+
+            return proxy_shopping_completed_order_numbers
+
+        except NoSuchElementException as e:
+            handle_no_such_element_exception(self.driver)
+        except Exception as e:
+            raise
+
+    def proxy_shopping(self, url) -> None:
+        """
+        ショッピング注文の代理購入を行う
+
+        Args:
+            url (str): 代理購入を行う注文のURL
+
+        Returns:
+            order_number (str): 代理購入を行った注文の注文番号
+
+        Raises:
+            Exception: 代理購入が失敗した場合、エラーメッセージと共に例外を発生させます。
+        """
+        try:
+            # CS管理画面にログイン
+            if not self.is_logged_in_cs:
+                self.login_cs()
+
+            # ショッピング注文詳細画面にアクセス
+            self.driver.get(url)
+
+            # 担当者を変更
+            operator_select = Select(self.driver.find_element(By.ID, "order_operator_operator_select"))
+            operator_select.select_by_index(1)
+            self.driver.find_element(By.ID, "operator_change_button").click()
+            self.driver.switch_to.alert.accept()
+
+            # アラートがでたらOKをクリック
+            try:
+                alert = self.driver.switch_to.alert
+                alert.accept()
+            except NoAlertPresentException:
+                pass
+
+            # 代理購入情報更新
+            self.driver.find_element(By.ID, "order_edit_button").click()
+
+            # 画面遷移待ち
+            time.sleep(1)
+
+            # 提携先ログインIDを変更
+            store_login_select = Select(self.driver.find_element(By.ID, "edit_store_login_id"))
+            store_login_select.select_by_index(1)
+
+            # 全てコピーボタンをクリック
+            self.driver.find_element(By.ID, "copy_all").click()
+
+            # 外部EC注文番号に注文番号を入力
+            order_number_element = self.driver.find_element(By.CLASS_NAME, "shopping_order_number")
+            full_text = order_number_element.text.strip()
+            match = re.search(r"注文番号：(\w+)", full_text)
+            order_number = match.group(1)
+            external_order_number_input = self.driver.find_element(By.ID, "external_order_number_0")
+            external_order_number_input.clear()
+            external_order_number_input.send_keys(order_number)
+
+            # 登録ボタンをクリック
+            self.driver.find_element(By.ID, "regist_btn").click()
+
+            # アラートがでたらOKをクリック
+            try:
+                alert = self.driver.switch_to.alert
+                alert.accept()
+            except NoAlertPresentException:
+                pass
+
+            return order_number
+
+        except NoSuchElementException as e:
+            handle_no_such_element_exception(self.driver)
+        except Exception as e:
+            raise
+
     def invoice_detail_input(self, baggage_number) -> None:
         """
         インボイス詳細登録を行う（DHL）

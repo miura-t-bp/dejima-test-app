@@ -142,6 +142,23 @@ def bundle_baggage(data):
         logger.error(e)
         return error_response(f"同梱作業チェックに失敗しました。")
 
+def proxy_shopping(data):
+    try:
+        # テスト環境を取得し、CsWhクラス生成
+        cswh = CsWh(data.get("env"))
+
+        # ショッピング代理購入
+        ebay_order_number = data.get("ebay_order_number")
+        proxy_shopping_completed_order_numbers = cswh.proxy_shopping_by_ebay_order_number(ebay_order_number)
+
+        return {
+            "ebay注文番号": ebay_order_number,
+            "代理購入済み注文番号": proxy_shopping_completed_order_numbers
+        }
+    except Exception as e:
+        logger.error(e)
+        return error_response(f"ショッピング代理購入に失敗しました。")
+
 def invoice_detail_input(data):
     try:
         # テスト環境を取得し、CsWhクラス生成
